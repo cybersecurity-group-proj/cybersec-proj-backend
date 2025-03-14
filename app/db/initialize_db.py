@@ -14,6 +14,10 @@ async def initialize_db():
                      description="create posts"
                 )
 
+                edit_own_posts_permission = Permission(
+                     description="edit own posts"
+                )
+
                 edit_posts_permission = Permission(
                      description="edit posts"
                 )
@@ -23,24 +27,26 @@ async def initialize_db():
                 )
 
                 edit_users_permission = Permission(
-                     description="edit user"
+                     description="edit users"
                 )
 
 
                 session.add(create_posts_permission)
+                session.add(edit_own_posts_permission)
                 session.add(edit_posts_permission)
                 session.add(edit_users_permission)
                 session.add(delete_posts_permission)
 
                 await session.flush()  
                 await session.refresh(create_posts_permission)
+                await session.refresh(edit_own_posts_permission)
                 await session.refresh(edit_posts_permission)
                 await session.refresh(edit_users_permission)
                 await session.refresh(delete_posts_permission)
 
                 user_role = Role(
                      name="user",
-                     permissions=[create_posts_permission]
+                     permissions=[create_posts_permission,edit_own_posts_permission]
                 )
 
                 moderator_role = Role(

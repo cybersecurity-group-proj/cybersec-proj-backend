@@ -20,6 +20,8 @@ class User(SQLModel, table=True):
     )
 
 class RolePermission(SQLModel, table=True):
+    __tablename__ = "rolepermission"
+
     role_uid: uuid.UUID = Field(foreign_key="role.uid", ondelete="CASCADE", primary_key=True)
     permission_uid: uuid.UUID = Field(foreign_key="permission.uid", ondelete="CASCADE", primary_key=True)
 
