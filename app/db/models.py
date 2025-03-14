@@ -1,4 +1,4 @@
-from sqlmodel import  SQLModel, Field, Column, Relationship
+from sqlmodel import SQLModel, Field, Column, Relationship
 import uuid
 import sqlalchemy.dialects.postgresql as pg
 from typing import Optional, List
@@ -10,30 +10,27 @@ class User(SQLModel, table=True):
         sa_column=Column(pg.UUID, nullable=False, primary_key=True, default=uuid.uuid4)
     )
 
-    username: str  = Field(unique=True)
-
+    username: str = Field(unique=True)
     password_hash: str = Field(exclude=True)
 
-    role_uid: uuid.UUID  = Field(foreign_key="role.uid",ondelete="CASCADE", primary_key=True)
-
-    role: "Role" = Relationship(
-        back_populates="settings", sa_relationship_kwargs={"lazy": "selectin"}
+    role_uid: uuid.UUID = Field(foreign_key="role.uid", ondelete="CASCADE") 
+    
+    role: Optional["Role"] = Relationship(
+        back_populates="users", sa_relationship_kwargs={"lazy": "selectin"}
     )
 
 class RolePermission(SQLModel, table=True):
-    role_uid: uuid.UUID  = Field(foreign_key="role.uid",ondelete="CASCADE", primary_key=True)
-    permission_uid: uuid.UUID = Field(foreign_key="permission.uid",ondelete="CASCADE", primary_key=True)
-
+    role_uid: uuid.UUID = Field(foreign_key="role.uid", ondelete="CASCADE", primary_key=True)
+    permission_uid: uuid.UUID = Field(foreign_key="permission.uid", ondelete="CASCADE", primary_key=True)
 
 class Role(SQLModel, table=True):
-    __tablename__ = 'role'
+    __tablename__ = "role"
 
     uid: uuid.UUID = Field(
         sa_column=Column(pg.UUID, nullable=False, primary_key=True, default=uuid.uuid4)
     )
 
     name: str = Field(unique=True, nullable=False)
-
     description: Optional[str] = None
 
     users: List["User"] = Relationship(
@@ -48,7 +45,7 @@ class Role(SQLModel, table=True):
     )
 
 class Permission(SQLModel, table=True):
-    __tablename__ = 'permission'
+    __tablename__ = "permission"
 
     uid: uuid.UUID = Field(
         sa_column=Column(pg.UUID, nullable=False, primary_key=True, default=uuid.uuid4)
@@ -56,14 +53,14 @@ class Permission(SQLModel, table=True):
 
     description: Optional[str] = None
 
-    roles: List[Role] = Relationship(
+    roles: List["Role"] = Relationship(
         back_populates="permissions",
         link_model=RolePermission,
         sa_relationship_kwargs={"lazy": "selectin"}
     )
 
 class Post(SQLModel, table=True):
-    __tablename__ = 'Post'
+    __tablename__ = "post" 
 
     uid: uuid.UUID = Field(
         sa_column=Column(pg.UUID, nullable=False, primary_key=True, default=uuid.uuid4)
@@ -72,8 +69,8 @@ class Post(SQLModel, table=True):
     title: str
     text: str
 
-    user_uid: uuid.UUID  = Field(foreign_key="user.uid",ondelete="CASCADE", primary_key=True)
+    user_uid: uuid.UUID = Field(foreign_key="app_user.uid", ondelete="CASCADE") 
 
-    author: User  = Relationship(
-        back_populates="settings", sa_relationship_kwargs={"lazy": "selectin"}
+    author: Optional["User"] = Relationship(
+        sa_relationship_kwargs={"lazy": "selectin"}
     )

@@ -3,7 +3,7 @@ from app.db.config import Config
 from sqlalchemy.orm import sessionmaker
 from fastapi import Depends
 from typing import Annotated
-
+from typing import AsyncGenerator
 
 engine : AsyncEngine = create_async_engine(
     url=Config.DATABASE_URL,
@@ -17,7 +17,7 @@ async_session = sessionmaker(
     expire_on_commit=False
 )
 
-async def get_async_session() -> AsyncSession:
+async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
     async with async_session() as session:
         yield session
 
