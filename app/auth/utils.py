@@ -2,7 +2,7 @@ import jwt.exceptions
 from passlib.context import CryptContext
 from datetime import datetime, timedelta
 import jwt
-from app.db.config import Config
+from app.config import Config
 import uuid
 import logging
 

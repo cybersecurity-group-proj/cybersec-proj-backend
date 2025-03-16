@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     DB_PORT: Optional[int] = 5432
     DB_NAME: Optional[str]
 
+    REDIS_URL: str = "redis://localhost:6379/0"
 
     DB_URL: Optional[str] = None
 

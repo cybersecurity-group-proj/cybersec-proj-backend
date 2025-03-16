@@ -4,10 +4,11 @@ from fastapi import Request, Depends, status
 from fastapi.security.http import HTTPAuthorizationCredentials
 from app.auth.utils import decode_token
 from fastapi.exceptions import HTTPException
-from app.db.blocklist import token_in_blocklist
+from app.db.redis import token_in_blocklist
 from app.db.main import db_session
-from app.auth.repo import AuthRepo
+from app.repos.auth import AuthRepo
 from app.schemas.auth import UserResponse
+from app.db.models import User
 
 user_repo = AuthRepo()
 
@@ -75,47 +76,25 @@ async def GetCurrentUser(
     token_details: access_token_bearer,
     session: db_session,
 ):
-    user_email = token_details["user"]["email"]
+    username = token_details["user"]["username"]
 
-    user = await user_repo.get_user_by_email(user_email, session)
+    user = await user_repo.get_user_by_username(username,session)
 
-    return UserResponse.model_validate(user)
+    return user
 
-get_current_user = Annotated[UserResponse,Depends(GetCurrentUser)]
+get_current_user = Annotated[User,Depends(GetCurrentUser)]
 
 class RoleChecker:
-    def __init__(self, allowed_roles: List[str]) -> None:
-        self.allowed_roles = allowed_roles
+    def __init__(self, allowed_permissions: List[str]) -> None:
+        self.allowed_roles = allowed_permissions
 
-    def __call__(self, current_user: get_current_user) :
-        if current_user.user_type in self.allowed_roles:
-            return True
+    def __call__(self, current_user: get_current_user):
         
-        if current_user.user_type == user_type.staff:
-            for permission in current_user.staff.role.permissions:
-                if permission.description in self.allowed_roles:
-                    return True
+        for permission in current_user.role.permissions:
+            if permission.description in self.allowed_permissions:
+                return True
 
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You are not allowed to preform this action"
         )
-    
-class RoleCheckerFactory:
-    @staticmethod
-    def create_role_checker(entity: str, staff: bool = False,patient: bool = False,edit: bool = False,view: bool = False) -> RoleChecker:
-        allowed_roles = ['admin']
-
-        if staff: 
-            allowed_roles.append('staff')
-
-        if patient:
-            allowed_roles.append('patient')
-
-        if edit:
-            allowed_roles.append(f'edit {entity}') 
-
-        if view:
-            allowed_roles.append(f'view {entity}') 
-
-        return RoleChecker(allowed_roles)

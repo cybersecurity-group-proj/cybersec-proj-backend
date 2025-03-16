@@ -1,8 +1,8 @@
 from pydantic import BaseModel
-from typing import Literal
+from typing import Optional
 import uuid
 
-class CreatePost(BaseModel):
+class PostCreate(BaseModel):
     title: str
     text: str
     user_uid: uuid.UUID
@@ -23,7 +23,7 @@ class UserResponse(BaseModel):
         "from_attributes": True
     }
 
-class ResponsePost(BaseModel):
+class PostResponse(BaseModel):
     title: str
     text: str
     author: UserResponse
@@ -31,3 +31,9 @@ class ResponsePost(BaseModel):
     model_config = {
         "from_attributes": True
     }
+
+
+class PostUpdate(BaseModel):
+    title: Optional[str] = None
+    text: Optional[str] = None
+    
