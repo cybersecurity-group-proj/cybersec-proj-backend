@@ -84,7 +84,7 @@ async def GetCurrentUser(
 
 get_current_user = Annotated[User,Depends(GetCurrentUser)]
 
-class RoleChecker:
+class PermissionChecker:
     def __init__(self, allowed_permissions: List[str]) -> None:
         self.allowed_roles = allowed_permissions
 
