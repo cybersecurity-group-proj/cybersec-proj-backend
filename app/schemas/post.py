@@ -24,6 +24,7 @@ class UserResponse(BaseModel):
     }
 
 class PostResponse(BaseModel):
+    uid: uuid.UUID
     title: str
     text: str
     author: UserResponse
