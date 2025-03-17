@@ -3,8 +3,7 @@ from typing import Literal
 import uuid
 
 class UpdateRole(BaseModel):
-    user_uid: uuid.UUID
-    role: Literal["Banned", "User", "Moderator", "Admin"]
+    role: Literal["banned", "user", "moderator", "admin"]
 
 
 class RoleResponse(BaseModel):

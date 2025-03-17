@@ -86,7 +86,7 @@ get_current_user = Annotated[User,Depends(GetCurrentUser)]
 
 class PermissionChecker:
     def __init__(self, allowed_permissions: List[str]) -> None:
-        self.allowed_roles = allowed_permissions
+        self.allowed_permissions = allowed_permissions
 
     def __call__(self, current_user: get_current_user):
         

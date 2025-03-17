@@ -14,7 +14,14 @@ class UserRepo:
 
         return [UserResponse.model_validate(user) for user in users]
     
-    async def update_role(self, user_id: str, user: UpdateRole, session: db_session) -> UserResponse:
+    async def get_user(self, user_id: str, session: db_session) -> Optional[UserResponse]:
+        statement = select(User).where(User.uid == user_id)
+        result = await session.execute(statement)
+        user = result.scalars().one_or_none()
+ 
+        return UserResponse.model_validate(user) if user else None
+    
+    async def update_role(self, user_id: str, new_role: UpdateRole, session: db_session) -> UserResponse:
         statement = select(User).where(User.uid == user_id)
         result = await session.execute(statement)
         user_to_update = result.scalars().one_or_none()
@@ -22,7 +29,7 @@ class UserRepo:
         if not user_to_update:
             return None
 
-        statement = select(Role).where(Role.name == UpdateRole.role)
+        statement = select(Role).where(Role.name == new_role.role)
         result = await session.execute(statement)
         role = result.scalars().one_or_none()
 
