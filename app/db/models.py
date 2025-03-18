@@ -1,7 +1,8 @@
-from sqlmodel import SQLModel, Field, Column, Relationship
+from sqlmodel import SQLModel, Field, Column, Relationship, DateTime
 import uuid
 import sqlalchemy.dialects.postgresql as pg
 from typing import Optional, List
+from datetime import datetime, timezone
 
 class User(SQLModel, table=True):
     __tablename__ = "app_user"
@@ -70,6 +71,7 @@ class Post(SQLModel, table=True):
 
     title: str
     text: str
+    time: datetime = Field(sa_column=Column(pg.TIMESTAMP(timezone=True), default=datetime.now(timezone.utc)))
 
     user_uid: uuid.UUID = Field(foreign_key="app_user.uid", ondelete="CASCADE") 
 

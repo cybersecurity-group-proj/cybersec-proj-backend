@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, status , Depends
 from typing import List, Annotated
 from app.db.main import db_session
 from app.repos.post import PostRepo
-from app.schemas.post import PostResponse, PostCreate, PostUpdate
+from app.schemas.post import PostResponse, PostCreate, PostUpdate, PostCreation
 from app.auth.dependencies import access_token_bearer, PermissionChecker , get_current_user
 
 post_router = APIRouter()
@@ -26,8 +26,14 @@ async def get_post(post_id: str, session: db_session, user_details: access_token
 
 
 @post_router.post("/", response_model=PostResponse, status_code=status.HTTP_201_CREATED)
-async def create_post(post: PostCreate, session: db_session, user_details: access_token_bearer, permission: create_permission_checker):
-    return await repo.create_post(post, session)
+async def create_post(post: PostCreate, session: db_session, user_details: access_token_bearer, permission: create_permission_checker, user: get_current_user):
+    new_post = PostCreation(
+        title=post.title,
+        text=post.text,
+        user_uid=user.uid
+    )
+
+    return await repo.create_post(new_post, session)
 
 @post_router.put("/{post_id}", response_model=PostResponse)
 async def update_post(post_id: str, updated_post : PostUpdate, session: db_session,  user_details: access_token_bearer, permission: edit_permission_checker, user: get_current_user):    

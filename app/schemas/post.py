@@ -1,10 +1,12 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional
 import uuid
-
+from datetime import datetime
 class PostCreate(BaseModel):
     title: str
     text: str
+
+class PostCreation(PostCreate):
     user_uid: uuid.UUID
 
 class RoleResponse(BaseModel):
@@ -27,6 +29,8 @@ class PostResponse(BaseModel):
     uid: uuid.UUID
     title: str
     text: str
+    time: datetime
+
     author: UserResponse
     
     model_config = {
