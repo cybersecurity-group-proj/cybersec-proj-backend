@@ -16,6 +16,7 @@ class RoleResponse(BaseModel):
 class UserResponse(BaseModel):
     uid: uuid.UUID
     username: str
+    name: str
     role: RoleResponse
     model_config = {
         "from_attributes": True

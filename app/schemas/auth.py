@@ -9,6 +9,7 @@ class UserLogin(BaseModel):
 class UserSignUp(BaseModel):
     username: str 
     password: str 
+    name:str
 
     @field_validator("password")
     @classmethod
@@ -35,6 +36,7 @@ class RoleResponse(BaseModel):
 class UserResponse(BaseModel):
     uid: uuid.UUID
     username: str
+    name:str
     role: RoleResponse
     model_config = {
         "from_attributes": True

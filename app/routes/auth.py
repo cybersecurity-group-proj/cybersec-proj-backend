@@ -14,7 +14,7 @@ from app.auth.dependencies import get_current_user
 auth_router = APIRouter()
 auth_repo = AuthRepo()
 
-REFRESH_TOKEN_EXPIRY = 2
+REFRESH_TOKEN_EXPIRY = 1
 
 @auth_router.post(
         "/signup",

@@ -74,7 +74,8 @@ async def initialize_db():
                 admin_user = User(
                     username="admin",
                     password_hash=generate_passwd_hash("Admin@1234"),
-                    role=admin_role
+                    role=admin_role,
+                    name="admin"
 
                 )
 

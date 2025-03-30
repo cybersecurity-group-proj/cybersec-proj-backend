@@ -7,11 +7,13 @@ from datetime import datetime, timezone
 class User(SQLModel, table=True):
     __tablename__ = "app_user"
 
+
     uid: uuid.UUID = Field(
         sa_column=Column(pg.UUID, nullable=False, primary_key=True, default=uuid.uuid4)
     )
 
     username: str = Field(unique=True)
+    name: str
     password_hash: str = Field(exclude=True)
 
     role_uid: uuid.UUID = Field(foreign_key="role.uid", ondelete="CASCADE") 

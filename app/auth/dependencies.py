@@ -80,16 +80,29 @@ async def GetCurrentUser(
 
     user = await user_repo.get_user_by_username(username,session)
 
+    return UserResponse.model_validate(user)
+
+get_current_user = Annotated[UserResponse,Depends(GetCurrentUser)]
+
+
+async def GetCurrentUserWithPermissions(
+    token_details: access_token_bearer,
+    session: db_session,
+):
+    username = token_details["user"]["username"]
+
+    user = await user_repo.get_user_by_username(username,session)
+
     return user
 
-get_current_user = Annotated[User,Depends(GetCurrentUser)]
+get_current_user_with_permissions = Annotated[User,Depends(GetCurrentUserWithPermissions)]
+
 
 class PermissionChecker:
     def __init__(self, allowed_permissions: List[str]) -> None:
         self.allowed_permissions = allowed_permissions
 
-    def __call__(self, current_user: get_current_user):
-        
+    def __call__(self, current_user: get_current_user_with_permissions):
         for permission in current_user.role.permissions:
             if permission.description in self.allowed_permissions:
                 return True
