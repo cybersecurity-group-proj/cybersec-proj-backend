@@ -10,7 +10,7 @@ repo = PostRepo()
 
 create_permission_checker= Annotated[bool,Depends(PermissionChecker(["create posts"]))]
 edit_permission_checker= Annotated[bool,Depends(PermissionChecker(["edit own posts","edit posts"]))]
-delete_permission_checker= Annotated[bool,Depends(PermissionChecker(["delete posts"]))]
+delete_permission_checker= Annotated[bool,Depends(PermissionChecker(["delete posts","edit own posts"]))]
 
 @post_router.get("/", response_model=List[PostResponse], status_code=status.HTTP_200_OK)
 async def get_all_posts(session: db_session):
@@ -54,8 +54,20 @@ async def update_post(post_id: str, updated_post : PostUpdate, session: db_sessi
 
 
 @post_router.delete("/{post_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_post(post_id: str, session: db_session,  user_details: access_token_bearer, permission: delete_permission_checker):
+async def delete_post(post_id: str, session: db_session,  user_details: access_token_bearer, permission: delete_permission_checker, user: get_current_user_with_permissions):
+    
+    post = await repo.get_post(post_id, session)
+
+    if not post:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
+
+    permissions = [permission.description for permission in user.role.permissions]
+
+    if "delete posts" not in permissions:
+        if post.author.uid != user.uid:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="User Does not own this post")
+        
     deleted = await repo.delete_post(post_id, session)
     if not deleted:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")  
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Could not delete post ")  
     return 
