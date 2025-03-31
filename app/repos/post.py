@@ -2,13 +2,13 @@ from typing import List, Optional
 from app.db.models import Post 
 from app.db.main import db_session
 from app.schemas.post import PostCreate, PostUpdate, PostResponse
-from sqlmodel import select, and_
+from sqlmodel import select, desc
 
 
 class PostRepo:
 
     async def get_all_posts(self, session: db_session) -> List[PostResponse]:
-        statement = select(Post)
+        statement = select(Post).order_by(desc(Post.time))
         result = await session.execute(statement)
         posts = result.scalars().all()
 

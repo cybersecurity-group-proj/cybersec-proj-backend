@@ -73,7 +73,7 @@ class Post(SQLModel, table=True):
 
     title: str
     text: str
-    time: datetime = Field(sa_column=Column(pg.TIMESTAMP(timezone=True), default=datetime.now(timezone.utc)))
+    time: datetime = Field(sa_column=Column(pg.TIMESTAMP(timezone=True), default=lambda: datetime.now(timezone.utc)))
 
     user_uid: uuid.UUID = Field(foreign_key="app_user.uid", ondelete="CASCADE") 
 
