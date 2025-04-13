@@ -2,7 +2,7 @@ import redis.asyncio as aioredis
 
 from app.config import Config
 
-JTI_EXPIRY = 3600
+JTI_EXPIRY = 86400
 
 token_blocklist = aioredis.from_url(Config.REDIS_URL)
 

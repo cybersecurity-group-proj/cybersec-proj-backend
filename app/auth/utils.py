@@ -27,7 +27,6 @@ def create_access_token(user_data: dict, expiry: timedelta = None, refresh: bool
     payload['jti'] = str(uuid.uuid4())
     payload['refresh'] = refresh
 
-    print(f"JWT_ALGORITHM: '{Config.JWT_ALGORITHM}'")
 
     token = jwt.encode(
         payload=payload,
